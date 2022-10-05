@@ -10,15 +10,38 @@ const checkRole = (...roles) => {
 
 const authenticatePass = async () => {
   const { accessToken, refreshToken } = req.signedCookies;
-  let payload = "";
-  if (accessToken) {
-    payload = verifyToken(accessToken);
+  if (!accessToken || !refreshToken) {
+    return CustomError.UnauthorizedError("No logged in user, please login");
+  }
+  try {
+    let payload = "";
+    if (accessToken) {
+      payload = verifyToken(accessToken);
+      const { userID, name, role } = payload.user;
+      req.user = { userID, name, role };
+      return next();
+    }
+    payload = verifyToken(refreshToken);
     const { userID, name, role } = payload.user;
     req.user = { userID, name, role };
-    return next();
+    const existingToken = await Token.findOne({
+      user: payload.user.userID,
+      refreshToken: payload.refreshToken,
+    });
+    if (!existingToken || !existingToken.isValid) {
+      return CustomError.UnauthorizedError("Authentication Error");
+    }
+    attachCookiesToResponse({
+      res,
+      user: payload.user,
+      refreshToken: existingToken.refreshToken,
+    });
+    next();
+
+    //   const existingToken = await Token.findOne({})
+  } catch (err) {
+    console.error(`An error occured; ${err}`);
   }
-  payload = verifyToken(refreshToken);
-  //   const existingToken = await Token.findOne({})
 };
 
 module.exports = {

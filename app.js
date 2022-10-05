@@ -1,3 +1,6 @@
+require("dotenv").config();
+require("express-async-errors");
+
 const express = require("express");
 const app = express();
 
@@ -13,6 +16,8 @@ const cookieParser = require("cookie-parser");
 
 const PORT = process.env.APP_PORT || 4040;
 //Initialize middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
 app.use(
@@ -38,6 +43,9 @@ if (process.env.NODE_ENV === "development") {
 }
 //Cloudinary Configuration
 require("./utils/cloudinaryConfig");
+
+//Import and Initialize routes
+app.use("/api/v1", require("./routes/authRouter"));
 //Import manual Middlewares
 const NotFoundMiddleware = require("./middlewares/notFound");
 const ErrorHandlerMiddleware = require("./middlewares/errorHandler");

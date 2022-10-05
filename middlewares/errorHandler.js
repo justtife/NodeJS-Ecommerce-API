@@ -4,16 +4,24 @@ const ErrorHandler = (err, req, res, next) => {
     msg: err.message,
     statusCode: err.statusCode,
   };
+
+  console.log(err);
+  console.log(err.errors);
+  // console.log(`Error is ${Object.values(err.errors)}`);
   switch (err.name) {
     case "ValidationError":
-      customError.msg = "Invalid Credentials";
       customError.statusCode = StatusCodes.BAD_REQUEST;
+      customError.msg = `Invalid request; ${Object.values(err.errors)}`;
+      break;
+    case "MongoServerError":
+      customError.statusCode = StatusCodes.BAD_REQUEST;
+      customError.msg = "Email already exists, please signup with a new one";
       break;
     default:
-      customError.msg =
-        err.message || "An error Occured, please try again later";
       customError.statusCode =
         err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+      customError.msg =
+        err.message || "An error occured, please try again later";
       break;
   }
   res.status(customError.statusCode).json({ msg: customError.msg });
