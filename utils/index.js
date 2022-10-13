@@ -5,6 +5,7 @@ const verificationEmail = require("./Emails/verificationMail");
 const verifiedEmail = require("./Emails/verifiedMail");
 const passwordResetMail = require("./Emails/passwordResetMail");
 const passwordConfirmationMessage = require("./Emails/passwordConfirmationMessage");
+const { upload } = require("./multerConfig");
 module.exports = {
   createJWT,
   verifyToken,
@@ -15,4 +16,5 @@ module.exports = {
   verifiedEmail,
   passwordResetMail,
   passwordConfirmationMessage,
+  upload,
 };

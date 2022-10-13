@@ -47,6 +47,8 @@ require("./utils/cloudinaryConfig");
 
 //Import and Initialize routes
 app.use("/api/v1", require("./routes/authRouter"));
+app.use("/api/v1", require("./routes/userRouter"));
+app.use("/api/v1", require("./routes/productRouter"));
 //Import manual Middlewares
 const NotFoundMiddleware = require("./middlewares/notFound");
 const ErrorHandlerMiddleware = require("./middlewares/errorHandler");
