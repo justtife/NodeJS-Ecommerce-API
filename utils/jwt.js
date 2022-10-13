@@ -11,7 +11,7 @@ const verifyToken = (token) => {
 };
 
 //Attach Cookies To Response
-const attachCokieToResponse = ({ res, user, refreshToken }) => {
+const attachCookiesToResponse = ({ res, user, refreshToken }) => {
   const accessTokenJWT = createJWT({ payload: { user } });
   const refreshTokenJWT = createJWT({ payload: { user, refreshToken } });
   const fiftenMinutes = 15 * 60 * 1000;
@@ -35,5 +35,5 @@ const attachCokieToResponse = ({ res, user, refreshToken }) => {
 module.exports = {
   createJWT,
   verifyToken,
-  attachCokieToResponse,
+  attachCookiesToResponse,
 };

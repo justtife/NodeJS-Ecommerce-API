@@ -1,17 +1,22 @@
 const CustomError = require("../errors/custom");
-const { verifyToken } = require("../utils");
+const { verifyToken, attachCookiesToResponse } = require("../utils");
+const Token = require("../models/Token");
 const checkRole = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return CustomError.UnauthorizedError("Unauthorized to acces this route");
+      return next(
+        CustomError.UnauthorizedError("Unauthorized to access this route")
+      );
     }
   };
 };
 
-const authenticatePass = async () => {
+const authenticatePass = async (req, res, next) => {
   const { accessToken, refreshToken } = req.signedCookies;
   if (!accessToken || !refreshToken) {
-    return CustomError.UnauthorizedError("No logged in user, please login");
+    return next(
+      CustomError.UnauthorizedError("No logged in user, please login")
+    );
   }
   try {
     let payload = "";
@@ -29,7 +34,7 @@ const authenticatePass = async () => {
       refreshToken: payload.refreshToken,
     });
     if (!existingToken || !existingToken.isValid) {
-      return CustomError.UnauthorizedError("Authentication Error");
+      return next(CustomError.UnauthorizedError("Authentication Error"));
     }
     attachCookiesToResponse({
       res,

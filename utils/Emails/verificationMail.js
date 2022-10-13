@@ -1,7 +1,7 @@
-const sendMail = require("./sendMail");
+const sendMail = require("../sendMail");
 
-const passwordResetMail = async ({ name, email, passwordToken }) => {
-  const url = `http://localhost:5050/api/v1/reset-password?passwordToken=${passwordToken}`;
+const verificationMail = async ({ name, email, verificationToken }) => {
+  const url = `http://localhost:${process.env.APP_PORT}/api/v1/verify-account?verificationToken=${verificationToken}&email=${email}`;
   const message = `
     <div style="display: flex; justify-content: center">
     
@@ -14,14 +14,18 @@ const passwordResetMail = async ({ name, email, passwordToken }) => {
                   width="100px"
                   style="display: block; margin: auto"
               /></a>
-              <h2 style="text-align: center">Forgot Your Password?</h2>
-              <p style="text-align: center"> ${email} </p>
+              <h2 style="text-align: center">Verify your account</h2>
             </div>
             <div class="body" style="padding-top: 10px">
-              <h3>Dear, ${name}</h3>
+              <h3>Hello, ${name}</h3>
               <p>
-                Did you forget your password? No problem-click on the button below to change it now
+                We received your signup request to register as one of our customers.
               </p>
+              <p>
+                Your request requires further verification to enable you sign in into
+                your customer dashboard
+              </p>
+              <p>Please click the button below to verify your account</p>
               <a
                 href="${url}"
                 style="
@@ -38,14 +42,16 @@ const passwordResetMail = async ({ name, email, passwordToken }) => {
                   text-decoration: none;
                   color: #555;
                 "
-                >Reset Your Password</a
+                >VERIFY</a
               >
               <i style="display: block"
                 ><small>***this link will expire in 5 minutes***</small></i
               >
             </div>
             <p>
-              If you did not attempt to reset your password, please ignore this email and nothing will change
+              If you did not attempt to create an account, please send and email to
+              <a href="/">support@tflowersandfabrics.com</a> to enable us disable the
+              account.
             </p>
             <p>
               Thanks, <br />
@@ -57,9 +63,8 @@ const passwordResetMail = async ({ name, email, passwordToken }) => {
   return sendMail({
     from: process.env.MAIL_USER,
     to: email,
-    subject: "ECommerce Password Reset",
+    subject: "ECommerce Email Verification",
     html: message,
   });
 };
-
-module.exports = passwordResetMail;
+module.exports = verificationMail;

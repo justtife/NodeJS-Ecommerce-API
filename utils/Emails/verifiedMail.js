@@ -1,27 +1,30 @@
-const sendMail = require('./sendMail');
+const sendMail = require("../sendMail");
 
-const passwordConfirmationMessage = async ({ email, date }) => {
+const verifiedMail = async ({ name, email }) => {
+  const url = `http://localhost:${process.env.APP_PORT}/api/v1/login`;
   const message = `
     <div style="display: flex; justify-content: center">
     
         <div style="border: 1px solid #555;border-radius: 5px;padding: 2vw 5vw 0.5em 5vw;color: #555;width: 80%;">
             <div class="head" style="border-bottom: 1px solid #555; padding-bottom: 10px">
-              <a href="http://localhost:5000"
+              <a href="http://localhost:${process.env.APP_PORT}"
                 ><img
                   src="https://i.postimg.cc/2jhpHL9B/Logo.png"
                   alt="teephaflowersandfabrics_logo"
                   width="100px"
                   style="display: block; margin: auto"
               /></a>
-              <h2 style="text-align: center">Your password has been changed</h2>
-              <p style="text-align: center"> ${email} </p>
+              <h2 style="text-align: center">Email Verified</h2>
             </div>
             <div class="body" style="padding-top: 10px">
+              <h3>Hello, ${name}</h3>
               <p>
-                The password for your Teepha Flowers and Fabrics Customer account ${email} was changed on ${date}. If you didn't change it, you should 
-                <a href="http://localhost:${process.env.APP_PORT}/password-recovery" style = "text-decoration: none;">recover your account</a> 
-                or contact us via <a href="#" style="text-decoration: none;">mail</a>
+              Thank you for verifing your account.
               </p>
+              <p>
+                You can now proceed to login <a href= "${url}">here</a>
+              </p>
+              
             </div>
             <p>
               Thanks, <br />
@@ -33,8 +36,8 @@ const passwordConfirmationMessage = async ({ email, date }) => {
   return sendMail({
     from: process.env.MAIL_USER,
     to: email,
-    subject: "Your password has been changed",
+    subject: "Email Verified",
     html: message,
   });
 };
-module.exports = passwordConfirmationMessage;
+module.exports = verifiedMail;

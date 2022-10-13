@@ -1,13 +1,15 @@
-const { createJWT, verifyToken, attachCokieToResponse } = require("./jwt");
+const { createJWT, verifyToken, attachCookiesToResponse } = require("./jwt");
+const createTokenUser = require("./createTokenUser");
 const sendEmail = require("./sendMail");
-const verificationEmail = require("./verificationMail");
-const verifiedEmail = require("./verifiedMail");
-const passwordResetMail = require("./passwordResetMail");
-const passwordConfirmationMessage = require("./passwordConfirmationMessage");
+const verificationEmail = require("./Emails/verificationMail");
+const verifiedEmail = require("./Emails/verifiedMail");
+const passwordResetMail = require("./Emails/passwordResetMail");
+const passwordConfirmationMessage = require("./Emails/passwordConfirmationMessage");
 module.exports = {
   createJWT,
   verifyToken,
-  attachCokieToResponse,
+  attachCookiesToResponse,
+  createTokenUser,
   sendEmail,
   verificationEmail,
   verifiedEmail,

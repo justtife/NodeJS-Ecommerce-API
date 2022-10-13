@@ -4,6 +4,8 @@ const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors/custom");
 const crypto = require("crypto");
 const {
+  createTokenUser,
+  attachCookiesToResponse,
   verificationEmail,
   verifiedEmail,
   passwordResetMail,
@@ -59,12 +61,14 @@ module.exports = class AuthAPI {
       msg: "User created successfully, please check mail to verify account",
     });
   }
-  static async verifyAccount(req, res) {
+  static async verifyAccount(req, res, next) {
     const { verificationToken, email } = req.query;
     const user = await User.findOne({ email });
     if (!user) {
-      return CustomError.NotFoundError(
-        "Invalid email or verification token, generate another link"
+      return next(
+        CustomError.NotFoundError(
+          "Invalid email or verification token, generate another link"
+        )
       );
     }
     if (
@@ -87,12 +91,14 @@ module.exports = class AuthAPI {
       msg: "An error occured, please generate another link as this link is either expired or incorrect",
     });
   }
-  static async resendVerificationMail(req, res) {
+  static async resendVerificationMail(req, res, next) {
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-      return CustomError.NotFoundError(
-        "User does not exist, signup to get a worth for your class"
+      return next(
+        CustomError.NotFoundError(
+          "User does not exist, signup to get a worth for your class"
+        )
       );
     }
     // User Not Verified
@@ -129,26 +135,32 @@ module.exports = class AuthAPI {
       .status(StatusCodes.OK)
       .json({ msg: "This account is already verified" });
   }
-  static async login(req, res) {
+  static async login(req, res, next) {
     const { email, password } = req.body;
     if (!email || !password) {
-      return CustomError.BadRequestError("Invalid Request");
+      return next(CustomError.BadRequestError("Invalid Request"));
     }
     const user = await User.findOne({ email });
     if (!user) {
-      return CustomError.NotFoundError(
-        "Invalid Request, please ensure email and password exists and are correct"
+      return next(
+        CustomError.NotFoundError(
+          "Invalid Request, please ensure email and password exists and are correct"
+        )
       );
     }
-    const isPassCorrect = await user.comparePassword(password);
+    const isPassCorrect = await user.comparePass(password);
     if (!isPassCorrect) {
-      return CustomError.BadRequestError(
-        "Invalid Request, please ensure email and password are correct"
+      return next(
+        CustomError.BadRequestError(
+          "Invalid Request, please ensure email and password are correct"
+        )
       );
     }
     if (!user.isVerified) {
-      return CustomError.UnauthorizedError(
-        "Account is not verified, please verify account before proceeding to login"
+      return next(
+        CustomError.UnauthorizedError(
+          "Account is not verified, please verify account before proceeding to login"
+        )
       );
     }
     //Create new token user and attach to cookie
@@ -193,10 +205,10 @@ module.exports = class AuthAPI {
     });
     res.status(StatusCodes.OK).json({ msg: "Logged out" });
   }
-  static async forgotPassword(req, res) {
+  static async forgotPassword(req, res, next) {
     const { email } = req.body;
     if (!email) {
-      return CustomError.BadRequestError("Invalid Request");
+      return next(CustomError.BadRequestError("Invalid Request"));
     }
     const user = await User.findOne({ email });
     if (user) {
@@ -227,13 +239,13 @@ module.exports = class AuthAPI {
         .status(StatusCodes)
         .json("Please check email for reset password link");
     }
-    return CustomError.NotFoundError("User does not Exist");
+    return next(CustomError.NotFoundError("User does not Exist"));
   }
-  static async resetPassword(req, res) {
+  static async resetPassword(req, res, next) {
     const { passwordToken } = req.query;
     const { email, password } = req.body;
     if (!passwordToken || !email || !password) {
-      return CustomError.BadRequestError("Invalid Request");
+      return next(CustomError.BadRequestError("Invalid Request"));
     }
     const user = await User.findOne({ email });
     if (user) {
@@ -256,6 +268,6 @@ module.exports = class AuthAPI {
         .status(StatusCodes.OK)
         .json({ msg: "Password has been changed, proceed to login" });
     }
-    return CustomError.BadRequestError("Invalid Request");
+    return next(CustomError.BadRequestError("Invalid Request"));
   }
 };

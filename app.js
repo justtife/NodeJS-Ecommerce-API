@@ -24,7 +24,7 @@ app.use(
   cors({
     origin: [`http://localhost:${PORT}`],
     methods: ["GET", "POST", "PATCH", "DELETE"],
-    // allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(helmet());
@@ -36,6 +36,7 @@ app.use(
     max: 60,
   })
 );
+app.use(cookieParser(process.env.JWT_SECRET));
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 } else if (process.env.NODE_ENV === "production") {
