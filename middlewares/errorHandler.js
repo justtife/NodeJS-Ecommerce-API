@@ -5,8 +5,9 @@ const ErrorHandler = (err, req, res, next) => {
     statusCode: err.statusCode,
   };
 
-  console.log(err);
+  console.log(`The errors: ${err}`);
   console.log(err.errors);
+  console.log(err);
   // console.log(`Error is ${Object.values(err.errors)}`);
   switch (err.name) {
     case "ValidationError":

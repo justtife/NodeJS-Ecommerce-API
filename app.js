@@ -13,7 +13,7 @@ const rateLimiter = require("express-rate-limit");
 const compression = require("compression");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-
+const cloudinary = require("cloudinary");
 const PORT = process.env.APP_PORT || 4040;
 //Initialize middlewares
 app.use(express.json());
@@ -43,12 +43,14 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("common"));
 }
 //Cloudinary Configuration
-require("./utils/cloudinaryConfig");
+const cloudinaryConfig = require("./utils/cloudinaryConfig");
+cloudinary.config(cloudinaryConfig);
 
 //Import and Initialize routes
 app.use("/api/v1", require("./routes/authRouter"));
 app.use("/api/v1", require("./routes/userRouter"));
-app.use("/api/v1", require("./routes/productRouter"));
+app.use("/api/v1/product", require("./routes/productRouter"));
+app.use("/api/v1/review", require("./routes/reviewRouter"));
 //Import manual Middlewares
 const NotFoundMiddleware = require("./middlewares/notFound");
 const ErrorHandlerMiddleware = require("./middlewares/errorHandler");

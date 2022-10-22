@@ -8,12 +8,13 @@ const checkRole = (...roles) => {
         CustomError.UnauthorizedError("Unauthorized to access this route")
       );
     }
+    next();
   };
 };
 
 const authenticatePass = async (req, res, next) => {
   const { accessToken, refreshToken } = req.signedCookies;
-  if (!accessToken || !refreshToken) {
+  if (!accessToken && !refreshToken) {
     return next(
       CustomError.UnauthorizedError("No logged in user, please login")
     );
@@ -43,7 +44,6 @@ const authenticatePass = async (req, res, next) => {
     });
     next();
 
-    //   const existingToken = await Token.findOne({})
   } catch (err) {
     console.error(`An error occured; ${err}`);
   }

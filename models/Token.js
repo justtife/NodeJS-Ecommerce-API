@@ -17,6 +17,6 @@ const TokenSchema = new mongoose.Schema(
   { timestamps: true }
 );
 // Set a token expiry when token not in use
-TokenSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 });
+TokenSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 3 });
 
 module.exports = mongoose.model("Token", TokenSchema);

@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
-
+const { randomUUID } = require("crypto");
 const ProductSchema = new mongoose.Schema(
   {
+    product_num: {
+      type: String,
+      default: randomUUID,
+    },
     name: {
       type: String,
       trim: true,
@@ -77,7 +81,7 @@ const ProductSchema = new mongoose.Schema(
 
 ProductSchema.virtual("reviews", {
   ref: "Review",
-  localField: "_id",
+  localField: "product_num",
   foreignField: "product",
   justOne: false,
 });

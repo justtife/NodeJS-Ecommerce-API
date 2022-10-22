@@ -3,7 +3,16 @@ const {
   authenticatePass,
   checkRole,
 } = require("../middlewares/authentication");
-const { upload } = require("../utils");
+// const { upload } = require("../utils");
+const multer = require("multer");
+let storage = multer.diskStorage({
+  filename: (req, file, cb) => {
+    cb(null, file.filename + "_" + Date.now() + "_" + file.originalname);
+  },
+});
+let upload = multer({
+  storage:storage,
+});
 const {
   getAllUsers,
   getSingleUser,
